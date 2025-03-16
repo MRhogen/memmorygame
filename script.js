@@ -1,8 +1,8 @@
 const ACCESS_KEY = "K3Ta7rSOP1-QNWYwx7whmMxH3-OVTh9n5oAAOed0kI4"; // استبدل هذا بـ Access Key الخاص بك
-let currentLevel = 5; // العدد الافتراضي للصور
+let currentLevel = 5; 
 const levelSelector = document.getElementById("level");
 
-let originalImages = []; // مصفوفة جديدة للاحتفاظ بالترتيب الأصلي
+let originalImages = []; 
 let shuffledImages = [];
 let selectedImages = [];
 let isGameStarted = false;
@@ -14,14 +14,14 @@ const nextBtn = document.getElementById("next-btn");
 const checkBtn = document.getElementById("check-btn");
 const message = document.getElementById("message");
 
-let selectedThumbnail = null; // متغير جديد لتتبع الصورة المحددة
+let selectedThumbnail = null; 
 
-// تعديل رابط API ليستخدم عدد الصور المحدد
+
 function getApiUrl(count) {
     return `https://api.unsplash.com/photos/random?client_id=${ACCESS_KEY}&count=${count}`;
 }
 
-// جلب الصور من Unsplash
+
 async function fetchImages() {
     try {
         const response = await fetch(getApiUrl(currentLevel));
@@ -33,7 +33,7 @@ async function fetchImages() {
     }
 }
 
-// دورة لخلط الصور
+
 function shuffleArray(array) {
     let currentArray = [...array]; // نسخة جديدة من المصفوفة
     for (let i = currentArray.length - 1; i > 0; i--) {
@@ -43,12 +43,12 @@ function shuffleArray(array) {
     return currentArray;
 }
 
-// عرض الصورة الكبيرة
+
 function displayLargeImage(imageUrl) {
     largeImageContainer.innerHTML = `<img src="${imageUrl}" alt="Large Image">`;
 }
 
-// عرض الصور في شريط صغير
+
 function displayThumbnails(images) {
     thumbnailBar.innerHTML = "";
     images.forEach((image, index) => {
@@ -56,7 +56,7 @@ function displayThumbnails(images) {
         thumbnail.classList.add("thumbnail");
         thumbnail.innerHTML = `<img src="${image}" alt="Thumbnail ${index + 1}" draggable="true" data-image-url="${image}">`;
         
-        // إضافة معالجات السحب
+     
         thumbnail.querySelector('img').addEventListener('dragstart', (e) => {
             e.dataTransfer.setData("text/plain", image);
             e.target.closest('.thumbnail').classList.add('dragging');
@@ -66,12 +66,12 @@ function displayThumbnails(images) {
             e.target.closest('.thumbnail').classList.remove('dragging');
         });
         
-        // إضافة معالج النقر للأجهزة المحمولة
+       
         thumbnail.addEventListener("click", (e) => {
-            // إذا كانت الصورة مخفية، لا تستجب للنقر
+           
             if (thumbnail.style.visibility === 'hidden') return;
 
-            // إزالة التحديد من الصورة السابقة
+            
             document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('selected'));
             
             if (selectedThumbnail === image) {
@@ -79,12 +79,12 @@ function displayThumbnails(images) {
                 selectedThumbnail = null;
                 thumbnail.classList.remove('selected');
             } else {
-                // تحديد الصورة الجديدة
+              
                 selectedThumbnail = image;
                 thumbnail.classList.add('selected');
             }
             
-            // عرض الصورة في العارض الكبير
+           
             displayLargeImage(image);
         });
         
@@ -92,7 +92,7 @@ function displayThumbnails(images) {
     });
 }
 
-// عرض الشريط المرقم
+
 function displayNumberedBar() {
     numberedBar.innerHTML = "";
     for (let i = 1; i <= shuffledImages.length; i++) {
@@ -100,11 +100,10 @@ function displayNumberedBar() {
         slot.classList.add("numbered-slot");
         slot.textContent = i;
         
-        // إضافة معالجات السحب والإفلات
         slot.addEventListener("dragover", (e) => e.preventDefault());
         slot.addEventListener("drop", handleDrop.bind(null, slot, i - 1));
         
-        // إضافة معالج النقر للأجهزة المحمولة
+       
         slot.addEventListener("click", () => {
             if (selectedThumbnail) {
                 handleDrop(slot, i - 1, { preventDefault: () => {}, dataTransfer: { getData: () => selectedThumbnail } });
@@ -118,7 +117,7 @@ function displayNumberedBar() {
     numberedBar.classList.remove("hidden");
 }
 
-// دالة مساعدة للتعامل مع إفلات/وضع الصور
+
 function handleDrop(slot, index, e) {
     e.preventDefault();
     const imageUrl = e.dataTransfer.getData("text/plain");
@@ -142,7 +141,7 @@ function handleDrop(slot, index, e) {
     checkCompleteness();
 }
 
-// إضافة دالة جديدة للتحقق من اكتمال الترتيب
+
 function checkCompleteness() {
     const isComplete = selectedImages.every(image => image !== null);
     if (isComplete) {
@@ -158,9 +157,9 @@ function checkCompleteness() {
     }
 }
 
-// بدء اللعبة
+
 async function startGame() {
-    // إعادة التنسيق الأصلي
+    
     document.body.style.backgroundColor = "";
     message.style.color = "";
     numberedBar.querySelectorAll('.numbered-slot').forEach(slot => {
@@ -168,7 +167,7 @@ async function startGame() {
         slot.style.backgroundColor = "";
     });
 
-    // إخفاء شريط الترتيب
+   
     numberedBar.classList.add("hidden");
     checkBtn.classList.add("hidden");
     nextBtn.classList.remove("hidden");
@@ -187,13 +186,13 @@ async function startGame() {
     displayThumbnails(shuffledImages);
     message.textContent = `المستوى ${levelSelector.selectedIndex + 1}: انقر على الصور لرؤيتها بشكل كبير، ثم اضغط على الزر للانتقال إلى مرحلة التذكر.`;
     
-    // تعطيل تغيير المستوى أثناء اللعب
+ 
     levelSelector.disabled = true;
 }
 
-// الانتقال إلى مرحلة التذكر
+
 function startMemoryPhase() {
-    // إعادة التنسيق الأصلي
+    
     document.body.style.backgroundColor = "";
     message.style.color = "";
     numberedBar.querySelectorAll('.numbered-slot').forEach(slot => {
@@ -208,14 +207,14 @@ function startMemoryPhase() {
     checkBtn.classList.remove('btn-success');
     checkBtn.classList.add('btn-secondary');
     
-    // إعادة خلط الصور في شريط الصور المصغرة
+  
     shuffledImages = shuffleArray([...originalImages]);
     displayThumbnails(shuffledImages);
     
     message.textContent = "قم بترتيب جميع الصور أولاً";
 }
 
-// التحقق من الترتيب
+
 function checkOrder() {
     let isAllCorrect = true;
     
@@ -246,20 +245,20 @@ function checkOrder() {
     nextBtn.classList.remove("hidden");
     checkBtn.classList.add("hidden");
     
-    // إعادة تفعيل تغيير المستوى
+   
     levelSelector.disabled = false;
 }
 
-// إضافة مستمع حدث لتغيير المستوى
+
 levelSelector.addEventListener("change", (e) => {
     currentLevel = parseInt(e.target.value);
     startGame();
 });
 
-// بدء اللعبة عند تحميل الصفحة
+
 window.onload = startGame;
 
-// تعديل مستمع الحدث للزر
+
 nextBtn.addEventListener("click", () => {
     if (nextBtn.textContent === "ابدأ من جديد") {
         startGame();
@@ -268,10 +267,10 @@ nextBtn.addEventListener("click", () => {
     }
 });
 
-// التحقق من الترتيب عند النقر على زر "تحقق من الترتيب"
+
 checkBtn.addEventListener("click", checkOrder);
 
-// إضافة الأنماط CSS للصور المحددة
+
 const style = document.createElement('style');
 style.textContent = `
     .thumbnail.selected {
